@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanulás — Kódolástechnika</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script>
+  MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+<header>
+  <h1>📚 Tanulás — összefoglaló</h1>
+  <p>A ZH 6 témakörének képletei és lényege, szépen szedve. Utána próbáld ki a gyakorlóban!</p>
+  <nav class="navbar">
+    <a href="index.html">🏠 Kezdőlap</a>
+    <a href="tanulas.html" class="current">📚 Tanulás</a>
+    <a href="gyakorlo.html">🎮 Gyakorló</a>
+    <a href="teszt.html">📝 Minta teszt</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="toc">
+    <a href="#t1">1. BSC / vektorok</a>
+    <a href="#t2">2. Kódolás alapok</a>
+    <a href="#t3">3. Lineáris kódok</a>
+    <a href="#t4">4. Hamming</a>
+    <a href="#t5">5. GF(q)</a>
+    <a href="#t6">6. Reed–Solomon</a>
+    <a href="#t7">7. Elméleti tételek</a>
+  </div>
+
+  <section class="study-sec" id="t1">
+    <h2>1. Bináris vektorok + BSC</h2>
+    <h3>Hamming-súly és -távolság</h3>
+    <p>Súly \(w(v)\) = az 1-esek száma. Távolság \(d(a,b) = w(a \oplus b)\) = az eltérő pozíciók száma.</p>
+    <p>Lineáris kódnál a minimális kódtávolság = a legkisebb nemzérus kódszó súlya: \(d_{min} = \min_{c\neq 0} w(c)\).</p>
+    <h3>Hibaminta valószínűsége BSC-n</h3>
+    <div class="formula">$$ P(\text{hibaminta}) = P_b^{\,w}\cdot(1-P_b)^{\,n-w} $$</div>
+    <p>ahol \(w\) a hibaminta súlya, \(n\) a kódszóhossz, \(P_b\) a bithiba-valószínűség.</p>
+    <div class="tip">💡 Kis súlyú hibaminták a valószínűbbek (ha \(P_b<0{,}5\)). A coset-vezető a legkisebb súlyú, azaz a legvalószínűbb.</div>
+  </section>
+
+  <section class="study-sec" id="t2">
+    <h2>2. Kódolás alapfogalmai + sémák</h2>
+    <h3>Jelző- és javítóképesség</h3>
+    <div class="formula">$$ t = \left\lfloor \frac{d_{min}-1}{2} \right\rfloor \qquad s = d_{min}-1 $$</div>
+    <p>\(t\) = hány hibát <b>javít</b>, \(s\) = hány hibát <b>jelez</b> (detektál). Mindig \(s \ge t\).</p>
+    <div class="tip">💡 Pl. \(d_{min}=3\): javít 1-et, jelez 2-t. Hamming-kód ilyen! Ne cseréld fel a kettőt.</div>
+    <h3>Min-távolság dekóder</h3>
+    <p>A vett szóhoz (\(v\)) a legközelebbi kódszót választjuk: \(c' = \arg\min_{c\in C} d(c,v)\), majd abból olvassuk ki az üzenetet (\(u'\)).</p>
+    <p>A csatorna: \(v = c \oplus e\), ahol \(e\) a hibavektor.</p>
+  </section>
+
+  <section class="study-sec" id="t3">
+    <h2>3. Bináris lineáris kódok</h2>
+    <h3>Generátor- és paritásmátrix</h3>
+    <div class="formula">$$ G = [\,I_k \mid P\,] \qquad\Longrightarrow\qquad H = [\,P^{T} \mid I_{n-k}\,] $$</div>
+    <p>\(G\) mérete \(k\times n\), \(H\) mérete \((n-k)\times n\). Fontos: a \(P\)-t <b>transzponálni</b> kell a \(H\)-hoz! Ellenőrzés: \(G\,H^{T} = 0\).</p>
+    <h3>Szindróma</h3>
+    <div class="formula">$$ s = H\cdot v^{T} \pmod 2 $$</div>
+    <p>A \(v\) 1-es pozícióihoz tartozó \(H\)-oszlopok XOR-ja. Két hibavektor <b>akkor</b> van egy cosetben, ha azonos a szindrómájuk.</p>
+    <h3>Darabszámok</h3>
+    <div class="formula">$$ \underbrace{2^k}_{\text{coset-méret}} \quad \underbrace{2^{\,n-k}}_{\text{cosetek száma}} \quad \underbrace{2^n}_{\text{összes vektor}} $$</div>
+    <p>A szindróma-dekódolási táblázat <b>bitjei</b>: soronként egy hibaminta (\(n\) bit) + egy szindróma (\(n-k\) bit):</p>
+    <div class="formula">$$ \text{bitek} = 2^{\,n-k}\cdot\big(n + (n-k)\big) $$</div>
+    <div class="tip">💡 „Legnagyobb/legkisebb súlyú <b>kódszó</b>" → a kódszavak (\(u\cdot G\)) közül válassz, NE a cosetből!</div>
+  </section>
+
+  <section class="study-sec" id="t4">
+    <h2>4. Hamming-kódok</h2>
+    <div class="formula">$$ n = 2^{m}-1 \qquad k = n-m \qquad d_{min}=3 \qquad t=1 $$</div>
+    <p>\(m\) = paritásbitek száma. A \(H\) oszlopai az <b>összes nemzérus</b> \(m\)-bites vektort tartalmazzák, mindegyiket egyszer.</p>
+    <div class="tip">💡 Hiányzó oszlop = az a nemzérus minta, ami még nem szerepel a \(H\)-ban. Javít mindig csak <b>1</b> hibát!</div>
+  </section>
+
+  <section class="study-sec" id="t5">
+    <h2>5. Műveletek GF(q) felett</h2>
+    <h3>GF(p), p prím</h3>
+    <p>Összeadás/szorzás <b>mod p</b>. A primitív elem \(\alpha\) hatványai kiadják az összes nemzérus elemet: \(\alpha^0,\alpha^1,\dots,\alpha^{\,q-2}\).</p>
+    <h3>GF(2^m) — hatványtábla</h3>
+    <p>Az elemek \(m\)-bites polinomok. Összeadás = XOR. Szorzás = a hatványkitevők összege:</p>
+    <div class="formula">$$ y^{i}\cdot y^{j} = y^{\,(i+j)\bmod (2^m-1)} $$</div>
+    <div class="tip">💡 GF(8)-ban \(2^m-1=7\), tehát pl. \(y^4\cdot y^5 = y^{9}=y^{2}\). A kitevőt mod 7 vedd, nem mod 8!</div>
+  </section>
+
+  <section class="study-sec" id="t6">
+    <h2>6. Reed–Solomon kódok</h2>
+    <div class="formula">$$ n = q-1 \qquad n-k = 2t \qquad t=\left\lfloor\frac{n-k}{2}\right\rfloor \qquad d_{min}=n-k+1 $$</div>
+    <p>Az RS mindig MDS. A paritásmátrix \(i\)-edik sora: \((\alpha^0, \alpha^{i}, \alpha^{2i}, \dots)\) — az első oszlop mindig csupa 1.</p>
+    <h3>Generátorpolinom</h3>
+    <div class="formula">$$ g(x) = (x-\alpha^{1})(x-\alpha^{2})\cdots(x-\alpha^{2t}) $$</div>
+    <p>\(t=1\) esetén \(g(x)=x^2+bx+c\), Viète szerint: \(b=-(\alpha+\alpha^2)\), \(c=\alpha\cdot\alpha^2\) (mod q).</p>
+    <h3>Shiftregiszter</h3>
+    <p><b>Előrecsatolt</b> = szorzás = kódolás; <b>visszacsatolt</b> = osztás = dekódolás. Késleltetők: \(\deg g = n-k\); szorzók: \(\deg g + 1\).</p>
+    <h3>Kódolás</h3>
+    <div class="formula">$$ c = u\cdot G \pmod q $$</div>
+  </section>
+
+  <section class="study-sec" id="t7">
+    <h2>7. Fontos elméleti tételek</h2>
+    <p><b>Singleton-korlát:</b> \(d \le n-k+1\). Egyenlőségnél a kód <b>MDS</b>.</p>
+    <p><b>Ciklikus kód:</b> \(g(x)\mid x^n-1\), \(\deg g = n-k\), \(\deg h = k\).</p>
+    <p><b>Forráskódolási tétel:</b> átlagos kódszóhossz \(\bar L \ge H\) (entrópia). Egyenletes \(N\) szimbólumú forrás: \(H=\log_2 N\).</p>
+    <p><b>Ortogonalitás:</b> \(H\,G^{T}=0\) minden lineáris kódra.</p>
+    <div class="tip">💡 A teljes, kiértékelt állítás-gyűjtemény (115 tétel) a <code>kodolastechnika_zh.md</code> jegyzetben.</div>
+  </section>
+
+  <div style="text-align:center;margin:24px 0">
+    <a href="gyakorlo.html"><button class="btn-primary">🎮 Irány a gyakorló!</button></a>
+  </div>
+</div>
+
+<footer>Tananyagon kívül (nincs a ZH-ban): RSA, konvolúciós kódok, trellis, forráskódolás.</footer>
+</body>
+</html>
