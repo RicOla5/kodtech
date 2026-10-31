@@ -8,39 +8,54 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap" style="padding-top:48px">
-  <div style="text-align:center;margin-bottom:8px">
-    <img src="favicon.svg" alt="logó" width="64" height="64">
-  </div>
-  <h1 style="text-align:center;font-size:1.8rem;margin:8px 0 6px">⚙️ Kódolástechnika ZH — felkészítő</h1>
-  <p style="text-align:center;color:var(--muted);margin:0 0 32px">Tanulj, gyakorolj egyesével, vagy írj egy teljes minta tesztet.</p>
+<div class="home-wrap">
+  <header class="home-hero">
+    <img src="favicon.svg" alt="logó" width="72" height="72">
+    <h1>Kódolástechnika ZH — felkészítő</h1>
+    <p>Tanulj, gyakorolj egyesével, vagy írj egy teljes minta tesztet. Minden egy helyen, szépen szedve.</p>
+  </header>
 
-  <div class="cards" style="display:grid;gap:16px">
-    <a class="study-sec" href="tanulas.html" style="text-decoration:none;color:var(--text);display:block">
-      <h2>📚 Tanulás</h2>
-      <p style="color:var(--muted)">A 6 témakör képletei és lényege, szépen szedve. Itt kezdj, ha átnéznéd az anyagot.</p>
+  <main class="home-grid">
+    <a class="home-card" href="tanulas.html">
+      <span class="home-card-icon">📚</span>
+      <h2>Tanulás</h2>
+      <p>A 6 témakör képletei és lényege, kidolgozott, magyarázott minta-levezetésekkel. Itt kezdj, ha átnéznéd az anyagot.</p>
     </a>
-    <a class="study-sec" href="gyakorlo.html" style="text-decoration:none;color:var(--text);display:block;border-color:var(--accent)">
-      <h2>🎮 Gyakorló (egyesével)</h2>
-      <p style="color:var(--muted)">Véletlen generált feladatok egyesével, azonnali ellenőrzéssel és lépésenkénti megoldással.</p>
-    </a>
-    <a class="study-sec" href="teszt.html" style="text-decoration:none;color:var(--text);display:block">
-      <h2>📝 Minta teszt</h2>
-      <p style="color:var(--muted)">Állíts össze egy ZH-szerű tesztet (5–20 feladat), töltsd ki, és nézd meg a pontszámod.</p>
-    </a>
-    <a class="study-sec" href="jegyzet.html" style="text-decoration:none;color:var(--text);display:block">
-      <h2>📖 Részletes jegyzet</h2>
-      <p style="color:var(--muted)">7 korábbi ZH minden feladata megoldással, RS-levezetésekkel, fogalomtárral, állítás-bankkal. Szépen szedett, MathJax-os oldal. <a href="forras/kodolastechnika_zh.md" style="font-size:.82rem">(nyers forrás)</a></p>
-    </a>
-    <a class="study-sec" href="katalogus.html" style="text-decoration:none;color:var(--text);display:block">
-      <h2>🗂️ Feladattípus-katalógus</h2>
-      <p style="color:var(--muted)">Minden előforduló típus általános megoldási recepttel. Szépen szedett, MathJax-os oldal. <a href="forras/feladattipusok_katalogus.md" style="font-size:.82rem">(nyers forrás)</a></p>
-    </a>
-  </div>
 
-  <footer style="margin-top:40px;border-top:1px solid var(--border);padding-top:20px">
-    Témakörök: bináris vektorok &amp; BSC · kódolás alapjai · lineáris kódok · Hamming · GF(q) · Reed–Solomon.<br>
-    Tananyagon kívül (nincs benne): RSA, konvolúciós kódok, trellis, forráskódolás.
+    <a class="home-card home-card--accent" href="gyakorlo.html">
+      <span class="home-card-icon">🎮</span>
+      <h2>Gyakorló</h2>
+      <p>Véletlen generált feladatok egyesével, azonnali ellenőrzéssel és lépésenkénti megoldással.</p>
+    </a>
+
+    <a class="home-card" href="teszt.html">
+      <span class="home-card-icon">📝</span>
+      <h2>Minta teszt</h2>
+      <p>Állíts össze egy ZH-szerű tesztet (5–20 feladat), töltsd ki, és nézd meg a pontszámod.</p>
+    </a>
+
+    <div class="home-card home-card--src">
+      <a class="home-card-main" href="jegyzet.html">
+        <span class="home-card-icon">📖</span>
+        <h2>Részletes jegyzet</h2>
+        <p>7 korábbi ZH minden feladata megoldással, RS-levezetésekkel, fogalomtárral és állítás-bankkal. Szépen szedett, MathJax-os oldal.</p>
+      </a>
+      <a class="home-card-raw" href="forras/kodolastechnika_zh.md">nyers forrás (.md) ↗</a>
+    </div>
+
+    <div class="home-card home-card--src">
+      <a class="home-card-main" href="katalogus.html">
+        <span class="home-card-icon">🗂️</span>
+        <h2>Feladattípus-katalógus</h2>
+        <p>Minden előforduló feladattípus általános megoldási recepttel. Szépen szedett, MathJax-os oldal.</p>
+      </a>
+      <a class="home-card-raw" href="forras/feladattipusok_katalogus.md">nyers forrás (.md) ↗</a>
+    </div>
+  </main>
+
+  <footer class="home-footer">
+    <p><b>Témakörök:</b> bináris vektorok &amp; BSC · kódolás alapjai · lineáris kódok · Hamming · GF(q) · Reed–Solomon.</p>
+    <p class="home-footer-muted">Tananyagon kívül (nincs benne): RSA, konvolúciós kódok, trellis, forráskódolás.</p>
   </footer>
 </div>
 </body>
