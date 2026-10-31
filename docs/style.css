@@ -85,3 +85,33 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px 16px}
 .study-sec li{margin:4px 0}
 .study-sec li>ol{margin:4px 0}
 @media(max-width:600px){.qtext{font-size:1rem}.card{padding:16px}}
+
+/* ===== nyitóoldal (index) ===== */
+.home-wrap{max-width:1000px;margin:0 auto;padding:40px 20px 24px}
+.home-hero{text-align:center;margin-bottom:32px}
+.home-hero img{display:block;margin:0 auto 14px}
+.home-hero h1{margin:0 0 8px;font-size:1.9rem;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.home-hero p{margin:0 auto;color:var(--muted);font-size:.95rem;max-width:520px}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;align-items:stretch}
+.home-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:24px 22px;text-decoration:none;color:var(--text);
+  box-shadow:0 8px 30px rgba(0,0,0,.25);transition:transform .15s,border-color .15s,box-shadow .15s}
+.home-card:hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 12px 36px rgba(56,189,248,.18)}
+.home-card-icon{font-size:2rem;line-height:1;margin-bottom:12px}
+.home-card h2{margin:0 0 8px;font-size:1.25rem;color:var(--accent)}
+.home-card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.55}
+.home-card--accent{border-color:var(--accent2)}
+.home-card--accent:hover{border-color:var(--accent2);box-shadow:0 12px 36px rgba(129,140,248,.2)}
+/* forrás-kártya: a fő rész kattintható (HTML oldal), alatta külön a nyers .md link — nincs link-a-linkben */
+.home-card--src{padding:0;overflow:hidden}
+.home-card-main{display:flex;flex-direction:column;flex:1;padding:24px 22px 16px;text-decoration:none;color:var(--text)}
+.home-card--src:hover .home-card-main h2{color:#7dd3fc}
+.home-card-raw{display:block;padding:11px 22px;border-top:1px solid var(--border);
+  background:var(--card2);color:var(--accent);font-size:.82rem;text-decoration:none}
+.home-card-raw:hover{background:#2f3f57;text-decoration:underline}
+.home-footer{margin-top:40px;border-top:1px solid var(--border);padding-top:22px;text-align:center;
+  color:var(--muted);font-size:.84rem}
+.home-footer p{margin:6px 0}
+.home-footer-muted{font-size:.78rem;opacity:.8}
+@media(max-width:520px){.home-wrap{padding:28px 16px 20px}.home-hero h1{font-size:1.5rem}}
