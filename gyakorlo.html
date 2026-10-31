@@ -3,86 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kódolástechnika — Interaktív Gyakorló</title>
-<style>
-  :root{
-    --bg:#0f172a; --card:#1e293b; --card2:#273449; --text:#e2e8f0; --muted:#94a3b8;
-    --accent:#38bdf8; --accent2:#818cf8; --ok:#22c55e; --bad:#ef4444; --warn:#f59e0b;
-    --border:#334155;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    background:linear-gradient(160deg,#0f172a,#111c33);color:var(--text);line-height:1.5}
-  header{padding:24px 16px;text-align:center;border-bottom:1px solid var(--border)}
-  header h1{margin:0 0 4px;font-size:1.5rem}
-  header p{margin:0;color:var(--muted);font-size:.9rem}
-  .wrap{max-width:860px;margin:0 auto;padding:16px}
-  .topics{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0}
-  .chip{padding:7px 13px;border-radius:999px;border:1px solid var(--border);
-    background:var(--card);color:var(--text);cursor:pointer;font-size:.85rem;transition:.15s}
-  .chip:hover{border-color:var(--accent)}
-  .chip.active{background:var(--accent);color:#06283d;border-color:var(--accent);font-weight:600}
-  .stats{display:flex;gap:12px;justify-content:center;margin:12px 0;flex-wrap:wrap}
-  .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;
-    padding:8px 16px;text-align:center;min-width:90px}
-  .stat b{display:block;font-size:1.3rem}
-  .stat span{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;
-    padding:22px;margin:16px 0;box-shadow:0 8px 30px rgba(0,0,0,.25)}
-  .qtype{display:inline-block;font-size:.72rem;color:var(--accent);background:rgba(56,189,248,.12);
-    padding:3px 10px;border-radius:6px;margin-bottom:10px;letter-spacing:.3px}
-  .qtext{font-size:1.05rem;margin:6px 0 14px}
-  .qtext b{color:#fff}
-  .matrix{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card2);
-    border-radius:8px;padding:12px 14px;margin:10px 0;overflow-x:auto;white-space:pre;font-size:.95rem}
-  .hint{background:var(--card2);border-left:3px solid var(--warn);padding:8px 12px;
-    border-radius:6px;font-size:.85rem;color:var(--muted);margin:10px 0}
-  .answer-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
-  input[type=text]{flex:1;min-width:180px;padding:11px 14px;border-radius:9px;border:1px solid var(--border);
-    background:#0b1324;color:var(--text);font-size:1rem;font-family:ui-monospace,monospace}
-  input[type=text]:focus{outline:none;border-color:var(--accent)}
-  button{padding:11px 18px;border-radius:9px;border:none;cursor:pointer;font-size:.95rem;
-    font-weight:600;transition:.15s}
-  .btn-primary{background:var(--accent);color:#06283d}
-  .btn-primary:hover{background:#7dd3fc}
-  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
-  .btn-ghost:hover{border-color:var(--accent)}
-  .feedback{margin-top:14px;padding:12px 14px;border-radius:9px;font-size:.95rem;display:none}
-  .feedback.ok{background:rgba(34,197,94,.12);border:1px solid var(--ok);color:#86efac;display:block}
-  .feedback.bad{background:rgba(239,68,68,.12);border:1px solid var(--bad);color:#fca5a5;display:block}
-  .solution{margin-top:10px;padding:12px 14px;background:var(--card2);border-radius:9px;
-    font-size:.88rem;display:none;border:1px solid var(--border)}
-  .solution.show{display:block}
-  .solution h4{margin:0 0 8px;color:var(--accent2);font-size:.9rem}
-  .solution ol{margin:6px 0;padding-left:20px}
-  .solution code{background:#0b1324;padding:1px 5px;border-radius:4px;font-size:.85em}
-  .controls{display:flex;gap:10px;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
-  footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px 16px}
-  .kbd{font-family:ui-monospace,monospace;background:#0b1324;border:1px solid var(--border);
-    border-radius:4px;padding:1px 6px;font-size:.8em}
-  @media(max-width:600px){.qtext{font-size:1rem}.card{padding:16px}}
-</style>
+<title>Gyakorló — Kódolástechnika</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script>
+  MathJax = { tex:{inlineMath:[['\\(','\\)']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
 </head>
 <body>
 <header>
-  <h1>⚙️ Kódolástechnika — Interaktív Gyakorló</h1>
+  <h1>🎮 Gyakorló — egyesével</h1>
   <p>Véletlen generált feladatok · automatikus ellenőrzés · lépésenkénti megoldás</p>
+  <nav class="navbar">
+    <a href="index.html">🏠 Kezdőlap</a>
+    <a href="tanulas.html">📚 Tanulás</a>
+    <a href="gyakorlo.html" class="current">🎮 Gyakorló</a>
+    <a href="teszt.html">📝 Minta teszt</a>
+  </nav>
 </header>
 
 <div class="wrap">
   <div class="topics" id="topics"></div>
-
   <div class="stats">
     <div class="stat"><b id="s-total">0</b><span>Megoldva</span></div>
     <div class="stat"><b id="s-correct" style="color:var(--ok)">0</b><span>Helyes</span></div>
     <div class="stat"><b id="s-streak" style="color:var(--accent)">0</b><span>Sorozat</span></div>
     <div class="stat"><b id="s-rate">—</b><span>Arány</span></div>
   </div>
-
-  <div class="card" id="card">
-    <!-- feladat ide generálódik -->
-  </div>
-
+  <div class="card" id="card"></div>
   <div class="controls">
     <button class="btn-ghost" id="btn-sol">💡 Megoldás mutatása</button>
     <button class="btn-primary" id="btn-next">Következő feladat →</button>
@@ -90,10 +39,61 @@
 </div>
 
 <footer>
-  Tipp: <span class="kbd">Enter</span> = ellenőrzés · A feladatok minden témakörből véletlenszerűen generálódnak.<br>
-  A haladásod a böngészőben mentődik. Tananyagon kívül: RSA, konvolúciós, trellis, forráskódolás.
+  Tipp: <span class="kbd">Enter</span> = ellenőrzés · A haladásod a böngészőben mentődik.
 </footer>
 
-<script src="gyakorlo.js"></script>
+<script src="engine.js"></script>
+<script>
+let state={topic:'all',current:null,answered:false};
+let stats=loadStats();
+function loadStats(){try{return JSON.parse(localStorage.getItem('ktstats'))||{total:0,correct:0,streak:0};}catch(e){return{total:0,correct:0,streak:0};}}
+function saveStats(){localStorage.setItem('ktstats',JSON.stringify(stats));}
+function renderStats(){
+  s_total.textContent=stats.total; s_correct.textContent=stats.correct;
+  s_streak.textContent=stats.streak; s_rate.textContent=stats.total?Math.round(100*stats.correct/stats.total)+'%':'—';
+}
+const $=id=>document.getElementById(id);
+function newQuestion(){ state.current=KT.pickGen(state.topic)(); state.answered=false; renderQuestion(); }
+function renderQuestion(){
+  const q=state.current;
+  $('card').innerHTML=`
+    <span class="qtype">${q.type}</span>
+    <div class="qtext">${q.question}</div>
+    ${q.hint?`<div class="hint">💡 ${q.hint}</div>`:''}
+    <div class="answer-row">
+      <input type="text" id="ans" placeholder="A válaszod…" autocomplete="off" autofocus>
+      <button class="btn-primary" id="btn-check">Ellenőrzés</button>
+    </div>
+    <div class="feedback" id="fb"></div>
+    <div class="solution" id="sol"><h4>Lépésenkénti megoldás</h4>${q.solution}</div>`;
+  $('sol').classList.remove('show');
+  const inp=$('ans'); inp.focus();
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer();});
+  $('btn-check').addEventListener('click',checkAnswer);
+  KT.typeset($('card'));
+}
+function checkAnswer(){
+  if(state.answered)return;
+  const q=state.current; const inp=$('ans').value;
+  if(inp.trim()==='')return;
+  const ok=q.check(inp); const fb=$('fb'); state.answered=true; stats.total++;
+  if(ok){stats.correct++;stats.streak++;fb.className='feedback ok';fb.innerHTML=`✅ <b>Helyes!</b> A válasz: <code>${q.answer}</code>`;}
+  else{stats.streak=0;fb.className='feedback bad';fb.innerHTML=`❌ <b>Nem jó.</b> A helyes válasz: <code>${q.answer}</code>`;$('sol').classList.add('show');}
+  saveStats();renderStats();KT.typeset($('card'));
+}
+function renderTopics(){
+  const box=$('topics'); box.innerHTML='';
+  KT.TOPICS.forEach(t=>{
+    const b=document.createElement('button');
+    b.className='chip'+(state.topic===t.id?' active':'');
+    b.textContent=t.name;
+    b.onclick=()=>{state.topic=t.id;renderTopics();newQuestion();};
+    box.appendChild(b);
+  });
+}
+$('btn-next').addEventListener('click',newQuestion);
+$('btn-sol').addEventListener('click',()=>{$('sol').classList.toggle('show');KT.typeset($('sol'));});
+renderTopics();renderStats();newQuestion();
+</script>
 </body>
 </html>

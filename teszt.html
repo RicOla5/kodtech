@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minta teszt — Kódolástechnika</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script>
+  MathJax = { tex:{inlineMath:[['\\(','\\)']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+<header>
+  <h1>📝 Minta teszt</h1>
+  <p>Állíts össze egy ZH-szerű tesztet, töltsd ki, majd nézd meg a pontszámod és a megoldásokat.</p>
+  <nav class="navbar">
+    <a href="index.html">🏠 Kezdőlap</a>
+    <a href="tanulas.html">📚 Tanulás</a>
+    <a href="gyakorlo.html">🎮 Gyakorló</a>
+    <a href="teszt.html" class="current">📝 Minta teszt</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <!-- Beállítás -->
+  <div class="setup" id="setup">
+    <h2 style="margin-top:0">Teszt összeállítása</h2>
+    <label for="count">Feladatok száma</label>
+    <select id="count">
+      <option value="5">5 feladat (gyors)</option>
+      <option value="10" selected>10 feladat (ZH-szerű)</option>
+      <option value="15">15 feladat (hosszú)</option>
+      <option value="20">20 feladat (teljes)</option>
+    </select>
+    <label for="topic">Témakör</label>
+    <select id="topic"></select>
+    <div style="margin-top:18px">
+      <button class="btn-primary" id="btn-start">Teszt indítása →</button>
+    </div>
+  </div>
+
+  <!-- Teszt -->
+  <div id="test" style="display:none"></div>
+  <div class="controls" id="test-controls" style="display:none">
+    <span class="kbd" id="progress"></span>
+    <button class="btn-primary" id="btn-submit">Beadás és értékelés</button>
+  </div>
+
+  <!-- Eredmény -->
+  <div id="result"></div>
+</div>
+
+<footer>A teszt beadás után megmutatja a helyes válaszokat és a lépésenkénti megoldásokat.</footer>
+
+<script src="engine.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let questions=[];
+
+// témakör legördülő feltöltése
+KT.TOPICS.forEach(t=>{ const o=document.createElement('option'); o.value=t.id; o.textContent=t.name; $('topic').appendChild(o); });
+
+$('btn-start').addEventListener('click',()=>{
+  const count=+$('count').value, topic=$('topic').value;
+  questions=[]; for(let i=0;i<count;i++) questions.push(KT.pickGen(topic)());
+  $('setup').style.display='none';
+  $('result').innerHTML='';
+  renderTest();
+  $('test').style.display='block';
+  $('test-controls').style.display='flex';
+  updateProgress();
+  KT.typeset();
+  window.scrollTo(0,0);
+});
+
+function renderTest(){
+  $('test').innerHTML=questions.map((q,i)=>`
+    <div class="test-q" id="q${i}">
+      <div class="qnum">${i+1}. feladat · ${q.type}</div>
+      <div class="qtext">${q.question}</div>
+      <div class="answer-row">
+        <input type="text" id="in${i}" placeholder="A válaszod…" autocomplete="off">
+      </div>
+    </div>`).join('');
+  questions.forEach((q,i)=>{
+    $('in'+i).addEventListener('input',updateProgress);
+    $('in'+i).addEventListener('keydown',e=>{ if(e.key==='Enter'){ const nx=$('in'+(i+1)); if(nx) nx.focus(); }});
+  });
+}
+
+function updateProgress(){
+  const filled=questions.filter((q,i)=>$('in'+i).value.trim()!=='').length;
+  $('progress').textContent=`${filled} / ${questions.length} kitöltve`;
+}
+
+$('btn-submit').addEventListener('click',()=>{
+  let correct=0;
+  questions.forEach((q,i)=>{
+    const val=$('in'+i).value;
+    const ok=val.trim()!=='' && q.check(val);
+    if(ok) correct++;
+    const box=$('q'+i);
+    box.classList.add(ok?'row-correct':'row-wrong');
+    // válasz + megoldás hozzáfűzése
+    const extra=document.createElement('div');
+    extra.className='feedback '+(ok?'ok':'bad');
+    extra.style.display='block';
+    extra.innerHTML = ok
+      ? `✅ Helyes! (<code>${q.answer}</code>)`
+      : `❌ A te válaszod: <code>${val||'(üres)'}</code> · Helyes: <code>${q.answer}</code>`;
+    box.appendChild(extra);
+    if(!ok){
+      const sol=document.createElement('div');
+      sol.className='solution show';
+      sol.innerHTML=`<h4>Megoldás</h4>${q.solution}`;
+      box.appendChild(sol);
+    }
+  });
+  const pct=Math.round(100*correct/questions.length);
+  const grade = pct>=85?'Jeles (5) 🏆':pct>=70?'Jó (4) 👍':pct>=55?'Közepes (3)':pct>=40?'Elégséges (2)':'Elégtelen (1) — gyakorolj még!';
+  $('result').innerHTML=`<div class="result-banner">
+    <div class="score">${correct} / ${questions.length}</div>
+    <div style="font-size:1.1rem;margin:6px 0">${pct}% · ${grade}</div>
+    <div style="color:var(--muted);font-size:.85rem">A hibás feladatoknál lent a megoldás is látszik.</div>
+    <div style="margin-top:14px"><button class="btn-primary" onclick="location.reload()">Új teszt</button></div>
+  </div>`;
+  $('test-controls').style.display='none';
+  KT.typeset();
+  $('result').scrollIntoView({behavior:'smooth'});
+});
+</script>
+</body>
+</html>
