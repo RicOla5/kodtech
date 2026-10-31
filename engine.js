@@ -17,8 +17,8 @@ const floor = Math.floor;
 function gfpMul(a, b, p){ return ((a % p) * (b % p)) % p; }
 function gfpPow(a, e, p){ let r=1; a%=p; while(e>0){ if(e&1) r=(r*a)%p; a=(a*a)%p; e>>=1;} return r; }
 
-/* primitív elem — ZH-konvenció: GF(5)→3, GF(7)→5, GF(11)→2 */
-const PREFERRED_PRIM = {5:3, 7:5, 11:2};
+/* primitív elem — ZH-konvenció: GF(5)→3, GF(7)→5, GF(11)→6 */
+const PREFERRED_PRIM = {5:3, 7:5, 11:6};
 function isPrimitive(g,p){
   const seen=new Set(); let x=1;
   for(let i=0;i<p-1;i++){ x=(x*g)%p; if(i<p-2 && x===1) return false; seen.add(x); }
