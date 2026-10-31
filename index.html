@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kódolástechnika ZH — felkészítő csomag</title>
+<style>
+  :root{
+    --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8;
+    --accent:#38bdf8; --accent2:#818cf8; --border:#334155;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:linear-gradient(160deg,#0f172a,#111c33);color:var(--text);
+    line-height:1.6;min-height:100vh}
+  .wrap{max-width:720px;margin:0 auto;padding:48px 20px}
+  h1{font-size:1.8rem;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0 0 32px}
+  .cards{display:grid;gap:16px}
+  a.card{display:block;text-decoration:none;color:var(--text);
+    background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:20px 22px;transition:.15s;box-shadow:0 6px 24px rgba(0,0,0,.2)}
+  a.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .card h2{margin:0 0 4px;font-size:1.15rem}
+  .card h2 .emoji{margin-right:8px}
+  .card p{margin:0;color:var(--muted);font-size:.9rem}
+  .card.primary{border-color:var(--accent);background:linear-gradient(135deg,#1e293b,#1a2742)}
+  .tag{display:inline-block;font-size:.7rem;color:var(--accent);
+    background:rgba(56,189,248,.12);padding:2px 9px;border-radius:6px;margin-top:8px}
+  footer{color:var(--muted);font-size:.78rem;margin-top:40px;text-align:center;
+    border-top:1px solid var(--border);padding-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚙️ Kódolástechnika ZH — felkészítő csomag</h1>
+  <p class="sub">Jegyzetek, feladattípus-katalógus és interaktív gyakorló egy helyen.</p>
+
+  <div class="cards">
+    <a class="card primary" href="gyakorlo.html">
+      <h2><span class="emoji">🎮</span>Interaktív gyakorló</h2>
+      <p>Véletlen generált feladatok, automatikus ellenőrzés, lépésenkénti megoldás és pontozás.</p>
+      <span class="tag">Kezdj itt!</span>
+    </a>
+
+    <a class="card" href="kodolastechnika_zh.md">
+      <h2><span class="emoji">📘</span>Részletes jegyzet</h2>
+      <p>7 korábbi ZH minden feladata megoldással, a két 20 pontos RS generátorpolinom teljes
+         levezetésével, fogalomtárral, buktatókkal és kiértékelt állítás-bankkal.</p>
+    </a>
+
+    <a class="card" href="feladattipusok_katalogus.md">
+      <h2><span class="emoji">🗂️</span>Feladattípus-katalógus</h2>
+      <p>Minden előforduló típus általános megoldási recepttel — gyors átnézéshez.</p>
+    </a>
+  </div>
+
+  <footer>
+    Témakörök: bináris vektorok &amp; BSC · kódolás alapjai · lineáris kódok · Hamming-kódok ·
+    GF(q) · Reed–Solomon.<br>
+    Tananyagon kívül (nincs benne): RSA, konvolúciós kódok, trellis, forráskódolás.
+  </footer>
+</div>
+</body>
+</html>
