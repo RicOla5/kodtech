@@ -76,4 +76,12 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px 16px}
 .setup select{padding:9px 12px;border-radius:8px;background:#0b1324;color:var(--text);border:1px solid var(--border);font-size:.95rem}
 .row-correct{border-color:var(--ok)!important}
 .row-wrong{border-color:var(--bad)!important}
+/* táblázatok (katalógus / jegyzet) */
+.study-sec table,.wrap>table{border-collapse:collapse;width:100%;margin:12px 0;font-size:.9rem;overflow-x:auto;display:block}
+.study-sec table th,.study-sec table td,.wrap>table th,.wrap>table td{border:1px solid var(--border);padding:7px 10px;text-align:left;vertical-align:top}
+.study-sec table th,.wrap>table th{background:var(--card2);color:#fff}
+.study-sec table tr:nth-child(even) td,.wrap>table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.study-sec ul,.study-sec ol{margin:6px 0;padding-left:22px}
+.study-sec li{margin:4px 0}
+.study-sec li>ol{margin:4px 0}
 @media(max-width:600px){.qtext{font-size:1rem}.card{padding:16px}}

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feladattípus-katalógus — Kódolástechnika</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script>
+  MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+<header>
+  <h1>🗂️ Feladattípus-katalógus</h1>
+  <p>Minden előforduló ZH-feladattípus általános megoldási recepttel — „hogyan oldom meg bármelyik ilyen feladatot".</p>
+  <nav class="navbar">
+    <a href="index.html">🏠 Kezdőlap</a>
+    <a href="tanulas.html">📚 Tanulás</a>
+    <a href="gyakorlo.html">🎮 Gyakorló</a>
+    <a href="teszt.html">📝 Minta teszt</a>
+    <a href="katalogus.html" class="current">🗂️ Katalógus</a>
+    <a href="jegyzet.html">📖 Jegyzet</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="tip">Ez a „hogyan oldom meg bármelyik ilyen feladatot" referencia — a konkrét ZH-példányok a <a href="jegyzet.html">jegyzet oldalon</a> vannak. Minden típusnál: <b>mit kérdeznek → képlet/recept → minta → gyakori hiba</b>.</div>
+
+  <div class="toc">
+    <a href="#t1">1. Bináris vektorok + BSC</a>
+    <a href="#t2">2. Kódolás alapfogalmai</a>
+    <a href="#t3">3. Lineáris kódok</a>
+    <a href="#t4">4. Hamming-kódok</a>
+    <a href="#t5">5. Műveletek GF(q) felett</a>
+    <a href="#t6">6. Reed–Solomon kódok</a>
+    <a href="#t7">7. Elméleti állítások</a>
+  </div>
+
+  <section class="study-sec" id="t1">
+    <h2>1. Bináris vektorok + BSC</h2>
+
+    <h3>1.1 Hibaminta előfordulási valószínűsége BSC-n</h3>
+    <ul>
+      <li><b>Kérdés:</b> Mi a valószínűsége egy adott \(w\) súlyú hibamintának, ha a BSC bithiba-valószínűsége \(P_b\)?</li>
+      <li><b>Recept:</b> $$ P = P_b^{\,w}\cdot(1-P_b)^{\,n-w} $$ ahol \(w\) = a hibaminta Hamming-súlya (1-esek száma), \(n\) = a kódszóhossz.</li>
+      <li><b>Minta:</b> coset-vezető \(000001\) (súly 1), \(n=6\), \(P_b=0{,}1\) → \(0{,}1^1\cdot 0{,}9^5 = 0{,}059 \approx 0{,}06\).</li>
+      <li><b>Hiba:</b> a \((1-P_b)^{\,n-w}\) tagot elfelejteni. A csoportvezető a <b>legkisebb</b> súlyú (legvalószínűbb) minta.</li>
+    </ul>
+
+    <h3>1.2 Hamming-távolság és -súly</h3>
+    <ul>
+      <li><b>Súly</b> \(w(v)\) = az 1-esek száma. <b>Távolság</b> \(d(a,b)\) = az eltérő pozíciók száma = \(w(a\oplus b)\).</li>
+      <li><b>Minimális kódtávolság</b> \(d_{min}\) = a legkisebb páronkénti távolság a kódszavak között (lineáris kódnál = a legkisebb nemzérus kódszó súlya).</li>
+    </ul>
+  </section>
+
+  <section class="study-sec" id="t2">
+    <h2>2. Kódolás alapfogalmai + kódolási sémák</h2>
+
+    <h3>2.1 Jelző- és javítóképesség</h3>
+    <ul>
+      <li><b>Javít:</b> \(t = \left\lfloor (d_{min}-1)/2 \right\rfloor\)</li>
+      <li><b>Jelez (detektál):</b> \(s = d_{min}-1\)</li>
+      <li><b>Minta:</b> \(d_{min}=3\) → javít \(1\), jelez \(2\). \(d_{min}=2\) → javít \(0\), jelez \(1\).</li>
+      <li><b>Hiba:</b> a kettő felcserélése! A jelzőképesség mindig \(\ge\) a javítóképesség.</li>
+    </ul>
+
+    <h3>2.2 Min-távolság dekóder séma (\(v \to c' \to u'\))</h3>
+    <ul>
+      <li><b>Kérdés:</b> adott kódtáblázat + bejövő üzenet + hibavektor; add meg \(v\), \(c'\), \(u'\)-t.</li>
+      <li><b>Recept:</b>
+        <ol>
+          <li>Kódold az üzenetet a táblázat szerint → \(c\).</li>
+          <li>\(v = c \oplus \text{hibavektor}\) (a csatorna kimenete).</li>
+          <li>\(c'\) = a \(v\)-hez <b>legközelebbi</b> kódszó (minimális Hamming-távolság).</li>
+          <li>\(u'\) = a \(c'\)-höz tartozó üzenet a táblázatból.</li>
+        </ol>
+      </li>
+      <li><b>Minta:</b> \(00\to00100\), hiba \(00100\) → \(v=00000\), legközelebbi kódszó \(c'=00100\), \(u'=00\).</li>
+      <li><b>Hiba:</b> a \(v\)-t és \(c'\)-t összekeverni; nem a legközelebbi kódszót választani.</li>
+    </ul>
+
+    <h3>2.3 Kódparaméterek \((n,k)\) meghatározása</h3>
+    <ul>
+      <li>\(n\) = kódszóhossz; \(k\) = üzenethossz; \(2^k\) = kódszavak száma (bináris).</li>
+      <li>Ha a kódszavak adottak: \(k = \log_2(\text{kódszavak száma})\), \(n\) = a kódszó hossza.</li>
+    </ul>
+  </section>
+
+  <section class="study-sec" id="t3">
+    <h2>3. Bináris lineáris kódok</h2>
+
+    <h3>3.1 Szisztematikus \(G\) és \(H\) felírása</h3>
+    <ul>
+      <li><b>Recept:</b> \(G = [\,I_k \mid P\,]\) (méret \(k\times n\)), ebből \(H = [\,P^{T} \mid I_{n-k}\,]\) (méret \((n-k)\times n\)).</li>
+      <li><b>A \(P\)-t transzponálni kell</b> a \(H\)-hoz! Ez a leggyakoribb hiba.</li>
+      <li><b>Ellenőrzés:</b> \(G\cdot H^{T} = 0\) (mod 2).</li>
+    </ul>
+
+    <h3>3.2 Szindróma számítása</h3>
+    <ul>
+      <li><b>Recept:</b> \(s = H \cdot v^{T}\) (a vett szó/hibavektor és a \(H\) szorzata mod 2). Egyszerűbben: a \(v\) 1-es pozícióihoz tartozó \(H\)-oszlopok összege (XOR).</li>
+      <li><b>Minta:</b> \(e=100001\), \(H=[P^{T}\mid I_4]\) → az 1. és 6. \(H\)-oszlop összege.</li>
+    </ul>
+
+    <h3>3.3 Hibacsoport (coset) és coset-vezető</h3>
+    <ul>
+      <li><b>Coset:</b> azonos szindrómájú hibavektorok halmaza. <b>Méret:</b> \(2^k\).</li>
+      <li><b>Coset-vezető:</b> a coset <b>legkisebb súlyú</b> eleme (a legvalószínűbb hibaminta).</li>
+      <li><b>Coset generálása:</b> \(\{\,e_{\text{vezető}} \oplus c : c \in \text{kód}\,\}\).</li>
+      <li><b>Két vektor egy cosetben \(\iff\) azonos a szindrómájuk.</b></li>
+    </ul>
+
+    <h3>3.4 „Darabszám" kérdések — NE keverd!</h3>
+    <table>
+      <thead><tr><th>Kérdés</th><th>Képlet</th><th>példa C(6,3)</th></tr></thead>
+      <tbody>
+        <tr><td>Hány vektor <b>egy</b> cosetben?</td><td>\(2^k\)</td><td>8</td></tr>
+        <tr><td>Hány coset (= szindróma) van?</td><td>\(2^{\,n-k}\)</td><td>8</td></tr>
+        <tr><td>Hány hibavektor <b>összesen</b>?</td><td>\(2^n\)</td><td>64</td></tr>
+        <tr><td>Kódszavak száma</td><td>\(2^k\)</td><td>8</td></tr>
+      </tbody>
+    </table>
+
+    <h3>3.5 Szindróma-dekódolási táblázat MÉRETE (bitben)</h3>
+    <ul>
+      <li><b>Recept:</b> \(2^{\,n-k}\cdot\big(n + (n-k)\big)\) — soronként egy hibaminta (\(n\) bit) + egy szindróma (\(n-k\) bit).</li>
+      <li><b>Minta:</b> C(8,3) → \(2^5\cdot(8+5) = 32\cdot13 = 416\). C(15,11) → \(16\cdot19 = 304\).</li>
+      <li><b>Hiba:</b> összekeverni a sorok számával (\(2^{\,n-k}\)).</li>
+    </ul>
+
+    <h3>3.6 Legnagyobb / legkisebb súlyú KÓDSZÓ</h3>
+    <ul>
+      <li>A kódszavak = \(u\cdot G\) (az összes \(2^k\) üzenetre), vagy a 0-szindrómás coset.</li>
+      <li><b>Hiba:</b> a feladatban megadott <i>coset</i> elemeiből választani! Mindig a kódszavak közül válassz (hacsak nem „hibavektor a hibacsoportban" a kérdés).</li>
+    </ul>
+
+    <h3>3.7 Generátor-/paritásmátrix sor- vagy oszlopvektora</h3>
+    <ul>
+      <li>Szisztematikusnál: \(G\) sorai \(=\) [egységsor | paritás], \(H\) sorai \(=\) [\(P^{T}\) sor | egységsor].</li>
+      <li>Oszlopvektor kérdésnél figyelj: a \(G\) oszlopa \(k\) hosszú, a \(H\) oszlopa \((n-k)\) hosszú.</li>
+    </ul>
+  </section>
+
+  <section class="study-sec" id="t4">
+    <h2>4. Hamming-kódok</h2>
+
+    <h3>4.1 Paraméterek</h3>
+    <ul>
+      <li>\(n = 2^{m}-1\), \(k = n-m\), \(d_{min} = 3\), <b>javít \(t = 1\)</b>, jelez \(2\).</li>
+      <li><b>Minta:</b> \(m=4 \to n=15,\ k=11\). \(m=3 \to n=7,\ k=4\).</li>
+      <li><b>Hiba:</b> \(t=2\)-t írni (az a jelzőképesség fele). Hamming mindig \(t=1\)!</li>
+    </ul>
+
+    <h3>4.2 Hiányzó oszlop rekonstrukciója</h3>
+    <ul>
+      <li><b>Recept:</b> a bináris Hamming \(H\) oszlopai az <b>összes nemzérus</b> \(m\)-bites vektort tartalmazzák, mindegyiket pontosan egyszer. A hiányzó oszlop(ok) az(ok), amely(ek) még nem szerepel(nek).</li>
+      <li><b>Minta:</b> C(7,4), \(H\) oszlopai közül hiányzik 2 → a 2 még nem szereplő nemzérus 3-bites minta (pl. \(111\) és \(100\)).</li>
+    </ul>
+
+    <h3>4.3 Üzenet-/kódszóvektorok</h3>
+    <ul>
+      <li>Szisztematikus \(G=[I_k\mid P]\): az \(i\)-edik oszlop (információs részben) az \(I_k\) \(i\)-edik egységoszlopa (\(k\) hosszú).</li>
+    </ul>
+  </section>
+
+  <section class="study-sec" id="t5">
+    <h2>5. Műveletek GF(q) felett</h2>
+
+    <h3>5.1 GF(p) (p prím) — modulo aritmetika</h3>
+    <ul>
+      <li>Összeadás/szorzás <b>mod p</b>. A primitív elem \(\alpha\) hatványai kiadják az összes nemzérus elemet.</li>
+      <li><b>Minta (GF(7), \(\alpha=5\)):</b> \(5^0=1,\ 5^1=5,\ 5^2=25\equiv4,\ 5^3\equiv6,\ 5^4\equiv2,\ 5^5\equiv3\).</li>
+    </ul>
+
+    <h3>5.2 GF(2^m) — hatványtábla, szorzás</h3>
+    <ul>
+      <li>Az elemek \(m\)-bites polinomok. <b>Szorzás = hatványkitevők összege mod \((2^m-1)\).</b> Összeadás = XOR.</li>
+      <li><b>Minta (GF(8), \(2^m-1=7\)):</b> \(y^4\cdot y^5 = y^9 = y^{\,9\bmod 7} = y^2\).</li>
+      <li><b>Hiba:</b> a kitevőket mod \(2^m\) venni (helyesen mod \(2^m-1\)).</li>
+    </ul>
+
+    <h3>5.3 Shiftregiszter a GF(2^m) szorzáshoz</h3>
+    <ul>
+      <li><b>Rekeszek (késleltetők) száma</b> = a definiáló polinom foka = \(m\).</li>
+      <li><b>Mod-2 összeadók száma</b> egy adott szorzótényezőhöz = a tényező polinomalakjának nemzérus együtthatói alapján (az \(y^i\)-ben lévő 1-esek szerinti struktúra).</li>
+    </ul>
+  </section>
+
+  <section class="study-sec" id="t6">
+    <h2>6. Reed–Solomon kódok</h2>
+
+    <h3>6.1 Paraméterek</h3>
+    <ul>
+      <li><b>Hossz:</b> \(n = q-1\) (a \(GF(q)\) nemzérus elemeinek száma).</li>
+      <li><b>Javítóképesség:</b> \(t = \left\lfloor (n-k)/2 \right\rfloor\), azaz \(n-k = 2t\).</li>
+      <li><b>Mindig MDS:</b> \(d_{min} = n-k+1\).</li>
+      <li><b>Minta:</b> GF(7), 2 hibát javít → \(n=6,\ n-k=4,\ k=2\). GF(11), 3 hibát → \(n=10,\ k=4\).</li>
+    </ul>
+
+    <h3>6.2 Paritásellenőrző mátrix \(H\) sorai</h3>
+    <ul>
+      <li>Az \(i\)-edik sor: \((\alpha^0, \alpha^{i}, \alpha^{2i}, \dots, \alpha^{(n-1)i})\) a \(GF(q)\)-ban.</li>
+      <li><b>Minta (GF(7), \(\alpha=5\)), 1. sor (\(i=1\)):</b> \(1,5,4,6,2,3\). 2. sor (\(i=2\), \(\alpha^2=4\)): \(1,4,2,1,4,2\).</li>
+      <li><b>Az első oszlop mindig csupa 1</b> (mert \(i=0 \to \alpha^0=1\)).</li>
+    </ul>
+
+    <h3>6.3 Generátormátrix sora (GF(q), \(\alpha\)-hatványsor)</h3>
+    <ul>
+      <li>A \(G\) sorai is \(\alpha\)-hatványsorok. GF(11), \(\alpha=2\), 2. sor: \(1,2,4,8,5,10,9,7,3,6\) (a \(2^j \bmod 11\)).</li>
+    </ul>
+
+    <h3>6.4 Üzenet kódolása \(c = u\cdot G\)</h3>
+    <ul>
+      <li><b>Recept:</b> a \(G\) sorainak \(u\)-együtthatós lineáris kombinációja a \(GF(q)\)-ban (mod q).</li>
+      <li><b>Minta:</b> GF(7), \(u=(2,2)\) → \(c=(4,5,3,0,6,1)\). ⚠️ Ezt gyakorold — visszatérő, könnyen elrontható!</li>
+    </ul>
+
+    <h3>6.5 Generátorpolinom \(g(x)\)</h3>
+    <ul>
+      <li><b>Recept:</b> \(g(x) = (x-\alpha^1)(x-\alpha^2)\cdots(x-\alpha^{2t})\), főegyüttható mindig 1.</li>
+      <li>\(t=1\) (2 gyök): \(g(x)=x^2+bx+c\), Viète: \(b = -(\alpha+\alpha^2)\), \(c = \alpha\cdot\alpha^2\), majd mod q.</li>
+      <li>\(t=2\) (4 gyök): páronként szorozz, majd a két másodfokút össze. (Teljes levezetés: lásd a <a href="jegyzet.html">jegyzet</a> RS-szekcióját.)</li>
+      <li><b>Minta (GF(5), \(\alpha=3\)):</b> \(g(x)=(x-3)(x-4)=x^2+3x+2\). (GF(7), \(\alpha=5\), \(t=2\)): \(x^4+4x^3+6x^2+5x+2\).</li>
+    </ul>
+
+    <h3>6.6 Shiftregiszteres kódolás/dekódolás</h3>
+    <ul>
+      <li><b>Előrecsatolt</b> (szorzó) regiszter = <b>kódolás</b> (adó). Szorzói a \(g(x)\) együtthatói a konstanstól a főtagig.</li>
+      <li><b>Visszacsatolt</b> (osztó) regiszter = <b>dekódolás</b> (vevő).</li>
+      <li><b>Késleltetők száma</b> = \(\deg g = n-k\); <b>szorzók száma</b> = \(\deg g + 1\).</li>
+    </ul>
+
+    <h3>6.7 Detektált üzenet a vett kódszóból</h3>
+    <ul>
+      <li>A dekódolási algoritmus után kapott kódszóból az üzenet kiolvasása (szisztematikusnál az információs pozíciókból).</li>
+    </ul>
+  </section>
+
+  <section class="study-sec" id="t7">
+    <h2>7. Elméleti állítások (igaz/hamis)</h2>
+    <p>„Mind vagy semmi" — egyetlen rossz döntés = 0 pont. A leggyakoribb tételek:</p>
+    <table>
+      <thead><tr><th>Tétel</th><th>Igaz megfogalmazás</th></tr></thead>
+      <tbody>
+        <tr><td>Singleton-korlát</td><td>\(d \le n-k+1\) (ennél nagyobb lehetetlen)</td></tr>
+        <tr><td>MDS</td><td>\(d = n-k+1\); az RS mindig MDS</td></tr>
+        <tr><td>Hamming</td><td>\(n=2^m-1\), \(t=1\), perfekt (de nem feltétlenül MDS)</td></tr>
+        <tr><td>\(C(3,1)\)</td><td>ismétléses, Hamming <b>és</b> MDS</td></tr>
+        <tr><td>Coset-méret</td><td>\(2^k\) minden hibacsoportban</td></tr>
+        <tr><td>Szindróma dimenziója</td><td>\(n-k\) (nem \(n\)!)</td></tr>
+        <tr><td>Szindróma = \(H\cdot v^{T}\)</td><td><b>nem</b> \(G\)-vel!</td></tr>
+        <tr><td>\(H\cdot G^{T} = 0\)</td><td>minden lineáris kódra igaz</td></tr>
+        <tr><td>Ciklikus \(g(x)\)</td><td>osztja \(x^n-1\)-et, foka \(n-k\)</td></tr>
+        <tr><td>Ciklikus \(h(x)\)</td><td>foka \(k\)</td></tr>
+        <tr><td>Előrecsatolt reg.</td><td>szorzás (kódolás); visszacsatolt = osztás (dekódolás)</td></tr>
+        <tr><td>Entrópia (egyenletes N forrás)</td><td>\(\log_2 N\) (nem \(2^N\)!)</td></tr>
+        <tr><td>Forráskódolási tétel</td><td>\(\bar L \ge H\) (átlagos hossz \(\ge\) entrópia)</td></tr>
+        <tr><td>BSC \(p=0{,}5\)</td><td>kapacitás minimális (= 0)</td></tr>
+        <tr><td>Nagyobb súlyú hibaminta</td><td><b>kevésbé</b> valószínű BSC-n (\(p<0{,}5\))</td></tr>
+      </tbody>
+    </table>
+    <div class="tip">Részletes, kiértékelt állítás-bank (115 tétel): lásd a <a href="jegyzet.html">jegyzet oldal</a> → Elméleti állítás-bank.</div>
+  </section>
+
+  <div class="tip"><b>Tananyagon kívül</b> (ennél a ZH-nál NEM kell): RSA/titkosítás, konvolúciós kódok, trellis, spektrális/Fourier-kódolás, Huffman/Shannon-Fano/LZ77 forráskódolás, hibacsapda, PGZ, sokfelhasználós rendszerek.</div>
+</div>
+
+<footer>Feladattípus-katalógus · a konkrét ZH-példányok a <a href="jegyzet.html">jegyzet oldalon</a>.</footer>
+</body>
+</html>

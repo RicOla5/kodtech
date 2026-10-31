@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanulás — Kódolástechnika</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script>
+  MathJax = { tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$']]}, svg:{fontCache:'global'} };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+<header>
+  <h1>📚 Tanulás — összefoglaló</h1>
+  <p>A ZH 6 témakörének képletei és lényege, szépen szedve. Utána próbáld ki a gyakorlóban!</p>
+  <nav class="navbar">
+    <a href="index.html">🏠 Kezdőlap</a>
+    <a href="tanulas.html" class="current">📚 Tanulás</a>
+    <a href="gyakorlo.html">🎮 Gyakorló</a>
+    <a href="teszt.html">📝 Minta teszt</a>
+    <a href="katalogus.html">🗂️ Katalógus</a>
+    <a href="jegyzet.html">📖 Jegyzet</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="toc">
+    <a href="#t1">1. BSC / vektorok</a>
+    <a href="#t2">2. Kódolás alapok</a>
+    <a href="#t3">3. Lineáris kódok</a>
+    <a href="#t4">4. Hamming</a>
+    <a href="#t5">5. GF(q)</a>
+    <a href="#t6">6. Reed–Solomon</a>
+    <a href="#t7">7. Elméleti tételek</a>
+  </div>
+
+  <section class="study-sec" id="t1">
+    <h2>1. Bináris vektorok + BSC</h2>
+    <h3>Hamming-súly és -távolság</h3>
+    <p>Súly \(w(v)\) = az 1-esek száma. Távolság \(d(a,b) = w(a \oplus b)\) = az eltérő pozíciók száma.</p>
+    <p>Lineáris kódnál a minimális kódtávolság = a legkisebb nemzérus kódszó súlya: \(d_{min} = \min_{c\neq 0} w(c)\).</p>
+    <h3>Hibaminta valószínűsége BSC-n</h3>
+    <div class="formula">$$ P(\text{hibaminta}) = P_b^{\,w}\cdot(1-P_b)^{\,n-w} $$</div>
+    <p>ahol \(w\) a hibaminta súlya, \(n\) a kódszóhossz, \(P_b\) a bithiba-valószínűség.</p>
+    <div class="tip">💡 Kis súlyú hibaminták a valószínűbbek (ha \(P_b<0{,}5\)). A coset-vezető a legkisebb súlyú, azaz a legvalószínűbb.</div>
+
+    <h3>Kidolgozott minta — hibaminta valószínűsége</h3>
+    <p><b>Feladat.</b> Egy \(C(6,3)\) kódot BSC-n továbbítunk, a bithiba-valószínűség \(P_b=0{,}1\). Mekkora egy olyan hibaminta valószínűsége, amelyben <b>pontosan 2 bit</b> fordult át (súly \(w=2\))?</p>
+    <p><b>1. lépés — miért ez a képlet?</b> A BSC minden bitet egymástól függetlenül ront el \(P_b\) valószínűséggel, és hagy helyesen \((1-P_b)\) valószínűséggel. Egy konkrét hibaminta akkor áll elő, ha a \(w\) darab megjelölt bit mind átfordul (ez \(P_b^{\,w}\)), a maradék \(n-w\) bit pedig mind helyes marad (ez \((1-P_b)^{\,n-w}\)). A független események valószínűségét összeszorozzuk.</p>
+    <div class="formula">$$ P = P_b^{\,w}\cdot(1-P_b)^{\,n-w} = 0{,}1^{2}\cdot 0{,}9^{\,4} $$</div>
+    <p><b>2. lépés — behelyettesítés.</b> \(0{,}1^2 = 0{,}01\) és \(0{,}9^4 = 0{,}6561\), ezek szorzata:</p>
+    <div class="formula">$$ P = 0{,}01\cdot 0{,}6561 = 0{,}006561 $$</div>
+    <p><b>3. lépés — mit jelent ez?</b> Hasonlítsuk össze egy <b>egyszeres</b> (\(w=1\)) hibaminta valószínűségével: \(P=0{,}1\cdot 0{,}9^{5}=0{,}059049\). Ez közel tízszer nagyobb! <b>Ezért fontos a súly:</b> minél kevesebb bit romlik el, annál valószínűbb az adott minta. Épp emiatt választjuk a szindróma-dekódolásnál a legkisebb súlyú hibamintát (a coset-vezetőt) — az a legvalószínűbb magyarázata a vett szónak.</p>
+  </section>
+
+  <section class="study-sec" id="t2">
+    <h2>2. Kódolás alapfogalmai + sémák</h2>
+    <h3>Jelző- és javítóképesség</h3>
+    <div class="formula">$$ t = \left\lfloor \frac{d_{min}-1}{2} \right\rfloor \qquad s = d_{min}-1 $$</div>
+    <p>\(t\) = hány hibát <b>javít</b>, \(s\) = hány hibát <b>jelez</b> (detektál). Mindig \(s \ge t\).</p>
+    <div class="tip">💡 Pl. \(d_{min}=3\): javít 1-et, jelez 2-t. Hamming-kód ilyen! Ne cseréld fel a kettőt.</div>
+    <h3>Min-távolság dekóder</h3>
+    <p>A vett szóhoz (\(v\)) a legközelebbi kódszót választjuk: \(c' = \arg\min_{c\in C} d(c,v)\), majd abból olvassuk ki az üzenetet (\(u'\)).</p>
+    <p>A csatorna: \(v = c \oplus e\), ahol \(e\) a hibavektor.</p>
+  </section>
+
+  <section class="study-sec" id="t3">
+    <h2>3. Bináris lineáris kódok</h2>
+    <h3>Generátor- és paritásmátrix</h3>
+    <div class="formula">$$ G = [\,I_k \mid P\,] \qquad\Longrightarrow\qquad H = [\,P^{T} \mid I_{n-k}\,] $$</div>
+    <p>\(G\) mérete \(k\times n\), \(H\) mérete \((n-k)\times n\). Fontos: a \(P\)-t <b>transzponálni</b> kell a \(H\)-hoz! Ellenőrzés: \(G\,H^{T} = 0\).</p>
+    <h3>Szindróma</h3>
+    <div class="formula">$$ s = H\cdot v^{T} \pmod 2 $$</div>
+    <p>A \(v\) 1-es pozícióihoz tartozó \(H\)-oszlopok XOR-ja. Két hibavektor <b>akkor</b> van egy cosetben, ha azonos a szindrómájuk.</p>
+    <h3>Darabszámok</h3>
+    <div class="formula">$$ \underbrace{2^k}_{\text{coset-méret}} \quad \underbrace{2^{\,n-k}}_{\text{cosetek száma}} \quad \underbrace{2^n}_{\text{összes vektor}} $$</div>
+    <p>A szindróma-dekódolási táblázat <b>bitjei</b>: soronként egy hibaminta (\(n\) bit) + egy szindróma (\(n-k\) bit):</p>
+    <div class="formula">$$ \text{bitek} = 2^{\,n-k}\cdot\big(n + (n-k)\big) $$</div>
+    <div class="tip">💡 „Legnagyobb/legkisebb súlyú <b>kódszó</b>" → a kódszavak (\(u\cdot G\)) közül válassz, NE a cosetből!</div>
+
+    <h3>Kidolgozott minta — szindróma-dekódolás egy \(C(6,3)\) kódon</h3>
+    <p><b>Feladat.</b> Legyen a szisztematikus generátormátrix \(G=[\,I_3\mid P\,]\), ahol</p>
+    <div class="formula">$$ P=\begin{pmatrix}1&1&0\\0&1&1\\1&0&1\end{pmatrix}\qquad\Longrightarrow\qquad H=[\,P^{T}\mid I_3\,]=\begin{pmatrix}1&0&1&1&0&0\\1&1&0&0&1&0\\0&1&1&0&0&1\end{pmatrix} $$</div>
+    <p><b>Mi az a coset? (érthetően).</b> A kód a \(2^3=8\) érvényes kódszó halmaza. Ha egy kódszóhoz hozzáadunk egy rögzített \(e\) hibavektort, az összes kódszó „eltolódik" ugyanazzal az \(e\)-vel — az így kapott 8 vektor egy <b>coset</b> (hibacsoport). A tér mind a \(2^6=64\) vektora pontosan egy cosetbe esik, és \(2^{n-k}=2^3=8\) coset van. Egy cosetben lévő összes vektornak <b>azonos a szindrómája</b> — a szindróma tehát megcímkézi a cosetet.</p>
+    <p><b>1. lépés — a szindróma kiszámítása.</b> Tegyük fel, hogy a vett szó eltérése a küldött kódszótól az \(e=(0,0,0,0,1,0)\) hibavektor (egy hiba az 5. pozíción). A szindróma \(s=H\cdot e^{T}\pmod 2\), ami az \(e\) 1-es pozícióihoz tartozó \(H\)-oszlopok XOR-ja. Itt csak az 5. oszlop „aktív": \((0,1,0)^{T}\), így</p>
+    <div class="formula">$$ s = H\cdot e^{T} = \text{(5. oszlop)} = (0,1,0) $$</div>
+    <p><b>2. lépés — coset-vezetők táblázata.</b> Minden lehetséges szindrómához kikeressük a <b>legkisebb súlyú</b> hibamintát (a coset-vezetőt). Az egyszeres hibák szindrómái itt éppen a \(H\) oszlopai:</p>
+    <div class="matrix">szindróma 110 → hiba (100000)
+szindróma 011 → hiba (010000)
+szindróma 101 → hiba (001000)
+szindróma 100 → hiba (000100)
+szindróma 010 → hiba (000010)
+szindróma 001 → hiba (000001)
+szindróma 000 → hiba (000000)</div>
+    <p><b>3. lépés — hogyan dekódolunk, és miért így?</b> A kapott \(s=(0,1,0)\) szindrómához a táblázat a \(\hat e=(0,0,0,0,1,0)\) coset-vezetőt rendeli. A dekódolt kódszó \(\hat c = v \oplus \hat e\), azaz a vett szóból <b>levonjuk</b> (bináris esetben XOR-oljuk) a coset-vezetőt. <b>Miért pont a coset-vezetőt?</b> Mert a vett szót sokféle hibaminta magyarázhatja (az adott coset mind a 8 eleme), de ezek közül a legkisebb súlyú a BSC-n a <b>legvalószínűbb</b> (lásd 1. szekció). A maximum-likelihood döntés tehát a coset-vezetőt választja.</p>
+    <div class="tip">💡 A \(H\) oszlopai itt mind különbözőek és nemzérusak, ezért minden egyszeres hibának egyedi szindrómája van → a kód minden 1 hibát javít.</div>
+  </section>
+
+  <section class="study-sec" id="t4">
+    <h2>4. Hamming-kódok</h2>
+    <div class="formula">$$ n = 2^{m}-1 \qquad k = n-m \qquad d_{min}=3 \qquad t=1 $$</div>
+    <p>\(m\) = paritásbitek száma. A \(H\) oszlopai az <b>összes nemzérus</b> \(m\)-bites vektort tartalmazzák, mindegyiket egyszer.</p>
+    <div class="tip">💡 Hiányzó oszlop = az a nemzérus minta, ami még nem szerepel a \(H\)-ban. Javít mindig csak <b>1</b> hibát!</div>
+
+    <h3>Kidolgozott minta — \(C(7,4)\) Hamming-kód \(H\) mátrixa (\(m=3\))</h3>
+    <p><b>Feladat.</b> Építsük fel a \(C(7,4)\) Hamming-kód paritásmátrixát, és mutassuk meg, melyik a hiányzó oszlop, ha egy oszlop lemarad.</p>
+    <p><b>1. lépés — a konstrukció ötlete.</b> A Hamming-kód \(H\) mátrixának oszlopai az <b>összes nemzérus</b> \(m\)-bites vektor, mindegyik pontosan egyszer. \(m=3\) esetén \(2^3-1=7\) ilyen vektor van (001-től 111-ig), ezért a kód hossza \(n=7\). Egy lehetséges elrendezés (az oszlopok az 1,2,…,7 bináris alakjai):</p>
+    <div class="formula">$$ H=\begin{pmatrix}0&0&0&1&1&1&1\\0&1&1&0&0&1&1\\1&0&1&0&1&0&1\end{pmatrix} $$</div>
+    <p><b>2. lépés — miért pont ezek az oszlopok?</b> Egy egyszeres hiba a \(j\)-edik biten éppen a \(H\) \(j\)-edik oszlopát adja szindrómaként. Ahhoz, hogy minden egyszeres hibát <b>megkülönböztessünk</b> (és így javítani tudjunk), az kell, hogy minden oszlop különböző és nemzérus legyen. Pontosan ezt garantálja az „összes nemzérus minta egyszer" szabály.</p>
+    <p><b>3. lépés — a hiányzó oszlop logikája.</b> Tegyük fel, hogy a dián a \(H\)-nak csak 6 oszlopa van, és ezek a \(\{001,010,100,101,110,111\}\) minták. A teljes nemzérus halmaz \(\{001,010,011,100,101,110,111\}\), ezért a hiányzó oszlop az egyetlen még nem szereplő minta: \(\mathbf{(0,1,1)}\). A pótlás módszere mindig ugyanez: írd fel az összes nemzérus \(m\)-bites mintát, és keresd meg, amelyik hiányzik.</p>
+    <p><b>4. lépés — miért javít pontosan 1 hibát? (\(d_{min}=3\)).</b> A minimális kódtávolság megegyezik a legkevesebb olyan \(H\)-oszlop számával, amelyek összege nulla. Egyetlen oszlop sem nulla (\(d\ge 2\)), és nincs két egyenlő oszlop sem, ezért két oszlop összege sem lehet nulla (\(d\ge 3\)). Viszont három alkalmas oszlop összege már kiadhatja a nullát (pl. \(001\oplus010\oplus011=000\)), tehát \(d_{min}=3\). Innen \(t=\lfloor(3-1)/2\rfloor=1\): a Hamming-kód pontosan <b>egy</b> hibát javít.</p>
+  </section>
+
+  <section class="study-sec" id="t5">
+    <h2>5. Műveletek GF(q) felett</h2>
+    <h3>GF(p), p prím</h3>
+    <p>Összeadás/szorzás <b>mod p</b>. A primitív elem \(\alpha\) hatványai kiadják az összes nemzérus elemet: \(\alpha^0,\alpha^1,\dots,\alpha^{\,q-2}\).</p>
+    <h3>GF(2^m) — hatványtábla</h3>
+    <p>Az elemek \(m\)-bites polinomok. Összeadás = XOR. Szorzás = a hatványkitevők összege:</p>
+    <div class="formula">$$ y^{i}\cdot y^{j} = y^{\,(i+j)\bmod (2^m-1)} $$</div>
+    <div class="tip">💡 GF(8)-ban \(2^m-1=7\), tehát pl. \(y^4\cdot y^5 = y^{9}=y^{2}\). A kitevőt mod 7 vedd, nem mod 8!</div>
+
+    <h3>Kidolgozott minta — multiplikatív inverz GF(11)-ben</h3>
+    <p><b>Feladat.</b> Határozzuk meg a \(7\) multiplikatív inverzét GF(11)-ben.</p>
+    <p><b>Mit jelent az inverz?</b> Egy \(a\) elem multiplikatív inverze az az \(a^{-1}\), amelyre \(a\cdot a^{-1}\equiv 1\pmod{11}\). Ez a „osztás" megfelelője a testben: \(x/a = x\cdot a^{-1}\). Mivel 11 prím, minden nemzérus elemnek létezik inverze.</p>
+    <p><b>Módszer (próbálgatás / maradékos gondolkodás).</b> Olyan \(b\)-t keresünk, amelyre \(7b\) a 11 egész számú többszöröse után 1 maradékot ad. A \(7\cdot 8=56\) szám épp \(5\cdot 11 + 1\), tehát:</p>
+    <div class="formula">$$ 7\cdot 8 = 56 = 5\cdot 11 + 1 \equiv 1 \pmod{11}\quad\Longrightarrow\quad 7^{-1}=8 $$</div>
+    <p><b>Ellenőrzés és miért működik.</b> \(7\cdot 8 = 56\equiv 1\), ahogy kell. (Nagyobb testben az inverz gyorsan megkapható a kis Fermat-tétellel is: \(a^{-1}\equiv a^{\,p-2}\pmod p\), azaz \(7^{9}\equiv 8\pmod{11}\).)</p>
+
+    <h3>Kidolgozott minta — szorzás GF(8)-ban hatványtáblával</h3>
+    <p><b>Feladat.</b> Szorozzuk össze a \(y^3\) és \(y^5\) elemeket GF(8)-ban (az \(x^3+x+1\) primitív polinommal).</p>
+    <p><b>Miért a kitevők összege?</b> GF(\(2^m\))-ben minden nemzérus elem a primitív elem \(y\) egy hatványaként írható: \(y^0,y^1,\dots,y^{2^m-2}\). Két hatvány szorzata a kitevők összegével adódik: \(y^i\cdot y^j=y^{i+j}\). Mivel \(y^{2^m-1}=1\) (a nemzérus elemek ciklikus csoportot alkotnak \(2^m-1\) renddel), a kitevőt <b>mod \(2^m-1\)</b> kell venni — GF(8)-nál ez mod 7.</p>
+    <div class="formula">$$ y^{3}\cdot y^{5} = y^{3+5} = y^{8} = y^{8\bmod 7} = y^{1} = y $$</div>
+    <p><b>Mire figyelj?</b> A modulus \(2^m-1=7\), nem \(2^m=8\)! A hatványtáblából \(y^1\) polinomalakja \(y\) (bitmintája 010). Az összeadás ezzel szemben <b>nem</b> a kitevőkön, hanem a polinomok bitenkénti XOR-ján történik — a két műveletet ne keverd össze.</p>
+  </section>
+
+  <section class="study-sec" id="t6">
+    <h2>6. Reed–Solomon kódok</h2>
+    <div class="formula">$$ n = q-1 \qquad n-k = 2t \qquad t=\left\lfloor\frac{n-k}{2}\right\rfloor \qquad d_{min}=n-k+1 $$</div>
+    <p>Az RS mindig MDS. A paritásmátrix \(i\)-edik sora: \((\alpha^0, \alpha^{i}, \alpha^{2i}, \dots)\) — az első oszlop mindig csupa 1.</p>
+    <h3>Generátorpolinom</h3>
+    <div class="formula">$$ g(x) = (x-\alpha^{1})(x-\alpha^{2})\cdots(x-\alpha^{2t}) $$</div>
+    <p>\(t=1\) esetén \(g(x)=x^2+bx+c\), Viète szerint: \(b=-(\alpha+\alpha^2)\), \(c=\alpha\cdot\alpha^2\) (mod q).</p>
+    <h3>Shiftregiszter</h3>
+    <p><b>Előrecsatolt</b> = szorzás = kódolás; <b>visszacsatolt</b> = osztás = dekódolás. Késleltetők: \(\deg g = n-k\); szorzók: \(\deg g + 1\).</p>
+    <h3>Kódolás</h3>
+    <div class="formula">$$ c = u\cdot G \pmod q $$</div>
+
+    <h3>Kidolgozott minta — \(G\) és \(H\) mátrix felépítése GF(7) felett (\(\alpha=5\))</h3>
+    <p><b>Feladat.</b> Írjuk fel egy GF(7) feletti RS-kód generátor- és paritásmátrixának sorait \(\alpha=5\) mellett.</p>
+    <p><b>1. lépés — az \(\alpha\) hatványsora.</b> Előbb kiszámoljuk \(\alpha=5\) hatványait GF(7)-ben (mod 7). Mivel \(n=q-1=6\), a sor 6 hosszú:</p>
+    <div class="formula">$$ \alpha^0,\alpha^1,\dots,\alpha^5 = 1,\,5,\,4,\,6,\,2,\,3 $$</div>
+    <p>(Pl. \(\alpha^2=25\equiv4\), \(\alpha^3=5\cdot4=20\equiv6\), és így tovább mod 7.)</p>
+    <p><b>2. lépés — a \(H\) sorai, és mit jelentenek.</b> A paritásmátrix \(i\)-edik sora az \(\alpha^i\) egymást követő hatványaiból áll: \((\alpha^0,\alpha^{i},\alpha^{2i},\dots)\). Ez pontosan azt rögzíti, hogy egy \(c\) kódszó akkor érvényes, ha a hozzá tartozó polinom gyöke \(\alpha^i\)-nek. Néhány sor (az oszlopkitevőt mindig mod 6 vesszük):</p>
+    <div class="matrix">i=1. sor: α^0,α^1,α^2,α^3,α^4,α^5 = 1,5,4,6,2,3
+i=2. sor: α^0,α^2,α^4,α^6,α^8,α^10 = 1,4,2,1,4,2
+i=3. sor: α^0,α^3,α^6,α^9,α^12,α^15 = 1,6,1,6,1,6</div>
+    <p><b>3. lépés — miért csupa 1 az első oszlop?</b> Minden sor \(\alpha^{0}\)-val kezdődik (a \(0\)-adik hatvány), és bármi a nulladik hatványon \(1\). Ezért a \(H\) (és a szisztematikus \(G\)) <b>első oszlopa mindig csupa 1-es</b> — ez gyors ellenőrzési fogás a ZH-ban.</p>
+
+    <h3>Kidolgozott minta — generátorpolinom levezetése (a „20 pontos")</h3>
+    <p><b>Feladat (GF(7), \(t=2\), \(\alpha=5\)).</b> Vezessük le a \(2t=4\) hibajavító RS-kód generátorpolinomját lépésről lépésre.</p>
+    <p><b>1. lépés — a gyökök.</b> A \(g(x)\) gyökei az \(\alpha^1,\alpha^2,\alpha^3,\alpha^4\) elemek. A 2. mintából (hatványsor) kiolvasva GF(7)-ben:</p>
+    <div class="formula">$$ \alpha^1=5,\quad \alpha^2=4,\quad \alpha^3=6,\quad \alpha^4=2 $$</div>
+    <p><b>2. lépés — a polinom szorzatalakja.</b> A generátorpolinom a gyöktényezők szorzata; minden aritmetikai lépés <b>mod 7</b> történik:</p>
+    <div class="formula">$$ g(x)=(x-5)(x-4)(x-6)(x-2)\pmod 7 $$</div>
+    <p><b>3. lépés — fokozatos kiszorzás (miért így?).</b> Két tényezőt összeszorozva és azonnal mod 7 redukálva elkerüljük a nagy számokat. Először \((x-5)(x-4)\): az \(x^2\) együtthatója 1, a lineáris tag \(-(5+4)=-9\equiv5\), a konstans \(5\cdot4=20\equiv6\):</p>
+    <div class="formula">$$ (x-5)(x-4)=x^2+5x+6\pmod 7 $$</div>
+    <p>Hasonlóan \((x-6)(x-2)\): lineáris tag \(-(6+2)=-8\equiv6\), konstans \(6\cdot2=12\equiv5\):</p>
+    <div class="formula">$$ (x-6)(x-2)=x^2+6x+5\pmod 7 $$</div>
+    <p>Végül a két másodfokú tényezőt összeszorozzuk, minden együtthatót mod 7:</p>
+    <div class="formula">$$ (x^2+5x+6)(x^2+6x+5)=x^4+4x^3+6x^2+5x+2\pmod 7 $$</div>
+    <p><b>4. lépés — Viète-ellenőrzés.</b> A Viète-összefüggések szerint a vezető együttható melletti tagok a gyökök elemi szimmetrikus polinomjai (előjelváltással). A gyökök összege \(5+4+6+2=17\equiv3\), így az \(x^3\) együtthatója \(-3\equiv4\) ✓. A gyökök szorzata \(5\cdot4\cdot6\cdot2=240\equiv2\pmod 7\), ami épp a konstans tag ✓. Az eredmény tehát:</p>
+    <div class="formula">$$ \boxed{\,g(x)=x^4+4x^3+6x^2+5x+2\,}\pmod 7 $$</div>
+    <div class="tip">💡 Kisebb minta (GF(5), \(t=1\), \(\alpha=3\)): gyökök \(\alpha^1=3,\ \alpha^2=4\). Viète: lineáris tag \(-(3+4)=-7\equiv3\), konstans \(3\cdot4=12\equiv2\), tehát \(g(x)=x^2+3x+2\pmod 5\). <b>Figyelem:</b> a GF(5) ZH-konvenciója \(\alpha=3\) — más \(\alpha\) más polinomot adna, ezért a primitív elemet mindig írd ki!</div>
+  </section>
+
+  <section class="study-sec" id="t7">
+    <h2>7. Fontos elméleti tételek</h2>
+    <p><b>Singleton-korlát:</b> \(d \le n-k+1\). Egyenlőségnél a kód <b>MDS</b>.</p>
+    <p><b>Ciklikus kód:</b> \(g(x)\mid x^n-1\), \(\deg g = n-k\), \(\deg h = k\).</p>
+    <p><b>Forráskódolási tétel:</b> átlagos kódszóhossz \(\bar L \ge H\) (entrópia). Egyenletes \(N\) szimbólumú forrás: \(H=\log_2 N\).</p>
+    <p><b>Ortogonalitás:</b> \(H\,G^{T}=0\) minden lineáris kódra.</p>
+    <div class="tip">💡 A teljes, kiértékelt állítás-gyűjtemény (115 tétel) a <code>kodolastechnika_zh.md</code> jegyzetben.</div>
+  </section>
+
+  <div style="text-align:center;margin:24px 0">
+    <a href="gyakorlo.html"><button class="btn-primary">🎮 Irány a gyakorló!</button></a>
+  </div>
+</div>
+
+<footer>Tananyagon kívül (nincs a ZH-ban): RSA, konvolúciós kódok, trellis, forráskódolás.</footer>
+</body>
+</html>
