@@ -50,11 +50,13 @@ let state={topic:'all',current:null,answered:false};
 let stats=loadStats();
 function loadStats(){try{return JSON.parse(localStorage.getItem('ktstats'))||{total:0,correct:0,streak:0};}catch(e){return{total:0,correct:0,streak:0};}}
 function saveStats(){localStorage.setItem('ktstats',JSON.stringify(stats));}
-function renderStats(){
-  s_total.textContent=stats.total; s_correct.textContent=stats.correct;
-  s_streak.textContent=stats.streak; s_rate.textContent=stats.total?Math.round(100*stats.correct/stats.total)+'%':'—';
-}
 const $=id=>document.getElementById(id);
+function renderStats(){
+  $('s-total').textContent=stats.total;
+  $('s-correct').textContent=stats.correct;
+  $('s-streak').textContent=stats.streak;
+  $('s-rate').textContent=stats.total?Math.round(100*stats.correct/stats.total)+'%':'—';
+}
 function newQuestion(){ state.current=KT.pickGen(state.topic)(); state.answered=false; renderQuestion(); }
 function renderQuestion(){
   const q=state.current;
