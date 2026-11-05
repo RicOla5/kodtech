@@ -35,7 +35,8 @@
   </div>
   <div class="card" id="card"></div>
   <div class="controls">
-    <button class="btn-ghost" id="btn-sol">💡 Megoldás mutatása</button>
+    <button class="btn-ghost" id="btn-hint">💡 Tipp</button>
+    <button class="btn-ghost" id="btn-sol">📖 Megoldás mutatása</button>
     <button class="btn-primary" id="btn-next">Következő feladat →</button>
   </div>
 </div>
@@ -63,7 +64,7 @@ function renderQuestion(){
   $('card').innerHTML=`
     <span class="qtype">${q.type}</span>
     <div class="qtext">${q.question}</div>
-    ${q.hint?`<div class="hint">💡 ${q.hint}</div>`:''}
+    ${q.hint?`<div class="hint" id="hint" style="display:none">💡 ${q.hint}</div>`:''}
     <div class="answer-row">
       <input type="text" id="ans" placeholder="A válaszod…" autocomplete="off" autofocus>
       <button class="btn-primary" id="btn-check">Ellenőrzés</button>
@@ -71,6 +72,10 @@ function renderQuestion(){
     <div class="feedback" id="fb"></div>
     <div class="solution" id="sol"><h4>Lépésenkénti megoldás</h4>${q.solution}</div>`;
   $('sol').classList.remove('show');
+  // tipp alaphelyzet: elrejtve, a gomb felirata visszaáll; ha nincs tipp, a gomb letiltva
+  const hintBtn=$('btn-hint');
+  if(q.hint){ hintBtn.disabled=false; hintBtn.textContent='💡 Tipp'; }
+  else { hintBtn.disabled=true; hintBtn.textContent='💡 Nincs tipp'; }
   const inp=$('ans'); inp.focus();
   inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer();});
   $('btn-check').addEventListener('click',checkAnswer);
@@ -96,6 +101,13 @@ function renderTopics(){
   });
 }
 $('btn-next').addEventListener('click',newQuestion);
+$('btn-hint').addEventListener('click',()=>{
+  const h=$('hint'); if(!h)return;
+  const show = h.style.display==='none';
+  h.style.display = show ? 'block' : 'none';
+  $('btn-hint').textContent = show ? '🙈 Tipp elrejtése' : '💡 Tipp';
+  if(show) KT.typeset(h);
+});
 $('btn-sol').addEventListener('click',()=>{$('sol').classList.toggle('show');KT.typeset($('sol'));});
 renderTopics();renderStats();newQuestion();
 </script>
